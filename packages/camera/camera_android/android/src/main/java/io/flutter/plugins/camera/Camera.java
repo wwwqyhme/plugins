@@ -790,7 +790,6 @@ class Camera
     } catch (CameraAccessException | IllegalStateException e) {
       // Ignore exceptions and try to continue (changes are camera session already aborted capture).
     } catch (RuntimeException ex) {
-      takePicture(result);
       processed = true;
     }
     mediaRecorder.reset();
@@ -803,6 +802,8 @@ class Camera
     if(!processed) {
       result.success(captureFile.getAbsolutePath());
       captureFile = null;
+    } else {
+      takePicture(result);
     }
   }
 
