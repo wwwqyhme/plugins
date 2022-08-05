@@ -775,6 +775,7 @@ class Camera
   }
 
   public void stopVideoRecording(@NonNull final Result result) {
+    boolean processed = false;
     if (!recordingVideo) {
       result.success(null);
       return;
@@ -788,6 +789,9 @@ class Camera
       mediaRecorder.stop();
     } catch (CameraAccessException | IllegalStateException e) {
       // Ignore exceptions and try to continue (changes are camera session already aborted capture).
+    } catch (RuntimeException ex) {
+      takePicture(result);
+      processed = true;
     }
     mediaRecorder.reset();
     try {
@@ -796,8 +800,10 @@ class Camera
       result.error("videoRecordingFailed", e.getMessage(), null);
       return;
     }
-    result.success(captureFile.getAbsolutePath());
-    captureFile = null;
+    if(!processed) {
+      result.success(captureFile.getAbsolutePath());
+      captureFile = null;
+    }
   }
 
   public void pauseVideoRecording(@NonNull final Result result) {
